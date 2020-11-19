@@ -76,19 +76,19 @@ char* day_of_week(int date, int month, int year) {
    //remainder on division by 7
    dayOfWeek = dayOfWeek % 7;
    if (dayOfWeek == 0)
-   strcpy(day,"Saturday") ;
+   strcpy(day,"Saturday\n") ;
    else if (dayOfWeek == 1)
-   strcpy(day, "Sunday");
+   strcpy(day, "Sunday\n");
    else if (dayOfWeek == 2)
-   strcpy(day, "Monday");
+   strcpy(day, "Monday\n");
    else if (dayOfWeek == 3)
-   strcpy(day, "Tuesday");
+   strcpy(day, "Tuesday\n");
    else if (dayOfWeek == 4)
-   strcpy(day, "Wednesday");
+   strcpy(day, "Wednesday\n");
    else if (dayOfWeek == 5)
-   strcpy(day, "Thursday");
+   strcpy(day, "Thursday\n");
    else if (dayOfWeek == 6)
-   strcpy(day, "Friday");
+   strcpy(day, "Friday\n");
    else
    strcpy(day, "Invalid Date");
    /*switch (dayOfWeek) 
@@ -209,20 +209,52 @@ void nextMessage()
     getchar();
 }
 
-int main()
+int main(int app_mode)
 {
     nextMessage();
     FILE * fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt", "r");
     FILE * fp_mod = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt", "w");
-    FILE * ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "w");
+    int app_mode = 0;
+    FILE * ticket;
+    if (app_mode)
+    {
+        ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "w");
+    }
+    else
+    {
+        ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "a");
+    }
     
+    
+    if (fp_orig == NULL)
+    {
+        /* Unable to open file hence exit */
+        printf("\nUnable to open airline_database.txt file.\n");
+        printf("Please check whether file exists and you have write privilege.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (fp_mod == NULL)
+    {
+        /* Unable to open file hence exit */
+        printf("\nUnable to open airline_database_mod.txt file.\n");
+        printf("Please check whether file exists and you have write privilege.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (ticket == NULL)
+    {
+        /* Unable to open file hence exit */
+        printf("\nUnable to open Ticket.txt file.\n");
+        printf("Please check whether file exists and you have write privilege.\n");
+        exit(EXIT_FAILURE);
+    }
+
     Date getDate = {0}; //variable to store date
     //get date year,month and day from user
     printf("\n Enter your journey date in format (dd/mm/yyyy): "); // input from the user in dd/mm/yy
     scanf("%d/%d/%d",&getDate.dd,&getDate.mm,&getDate.yyyy);
     char * day_of_travel = Day(&getDate);
     printf("Available airports: New Delhi, Mumbai, Kolkata, Chennai, Hyderabad\n");
-    char buffer[50], board[30], dest[20];
+    char buffer[100], board[30], dest[20];
     printf("Enter your source of Journey : ");
     // always note that string is an array of characters and usually writing that string alone means we are 
     // giving the address of first element of that array = &string[0]. and hence we don't specify "&string" in "scanf".
@@ -236,30 +268,31 @@ int main()
         printf("Error in opening file! :(\n");
         exit(1);
     }
-    while (fgets(buffer, 50, fp_orig) != NULL)
+    while (fgets(buffer, 100, fp_orig) != NULL)
     {
         if (strcmp(day_of_travel, buffer) == 0)
         {
             // put the whole string line to the fp_mod file.
             fputs(buffer, fp_mod);
-            char board_to_dest[30];
-            fgets(board_to_dest, 30, fp_orig);
+            char board_to_dest[100];
+            fgets(board_to_dest, 100, fp_orig);
             strcat(strcat(board, " to "), strcat(dest, "\n"));
 
             if (strcmp(board_to_dest, board) == 0)
             {
-                // write to new file.
+                // write to the new file fp_mod.
                 fputs(board_to_dest, fp_mod);
                 //allocate a matrix shape memory space to Flight_line struct
-                FLight_line* flight_line = malloc(sizeof(FLight_line) * 6);
+                FLight_line* Flight_line = malloc(sizeof(FLight_line) * 6);
                 printf("Available flights on %s from %s :--", day_of_travel, board_to_dest);
                 for (int i = 0; i < 6; i++)
                 {
-                    fgets(&flight_line[i], sizeof(FLight_line), fp_orig);
-                    printf("%s", flight_line[i]);
+                    fgets(Flight_line[i].flight_line, sizeof(FLight_line), fp_orig);
+                    printf("%s", Flight_line[i].flight_line);
                 }
                 printf("\n");
-                free(flight_line);//free up the used up space
+                free(Flight_line);//free up the used up space
+
                 printf("Choose your Plane by its Id\n");
                 char Id[5];
                 scanf("%s", Id);
@@ -360,6 +393,21 @@ int main()
                                 printf("Total Fare : %.1f\n\n\n",price);
                                 printf("=============================================================\n");
                                 free(Ticket);
+                                printf("Do you want to book more seats? y/n\n");
+                                char Bool1[1];
+                                scanf("%s", Bool1);
+                                if (strcmp(Bool1, "y") == 0)
+                                {
+                                    app_mode = 0;
+                                    main(app_mode);
+                                }
+                                else
+                                {
+                                    printf("Thank you for booking ticket with us\n");
+                                    printf("Hope to see you again! :)\n");
+                                    exit(1);
+                                }
+
                             }
                             else
                             {
@@ -369,7 +417,106 @@ int main()
                                 scanf("%s", Bool);
                                 if (strcmp(Bool, "y") == 0)
                                 {
-                                    main();
+                                    main(app_mode);
+                                }
+                                else
+                                {
+                                    exit(1);
+                                }
+                                
+                            }
+                        }
+                        else
+                        {
+                            printf("Enter no. of Travellers : ");
+                            int pass_no;
+                            scanf("%d", &pass_no);
+                            F_details[i].seats_available_e -= pass_no;
+                            traveller_details* Ticket = malloc(sizeof(traveller_details)*pass_no);
+                            float price =  0.0;
+                            for (int j = 0; j < pass_no; j++)
+                            {
+                                printf("\nEnter details for traveller no. %d : \n", (j+1));
+                                printf("Enter name : ");
+                                char traveller_name[50];
+                                scanf("%s", traveller_name);
+                                Ticket[j].name = traveller_name;
+                                printf("\nEnter your age : ");
+                                int age_name;
+                                scanf("%d", &age_name);
+                                Ticket[j].age = age_name;
+                                printf("\nEnter your Mobile Number ; ");
+                                int mobile;
+                                scanf("%d", &mobile);
+                                Ticket[j].mobile_no = mobile;
+                                Ticket[j].class = BE;
+                                Ticket[j].seat_price = F_details[i].fare_business;
+                                price += Ticket[j].seat_price;
+                                sscanf(board_to_dest, "%s %*s %s", Ticket[j].source, Ticket[j].destination);
+                                Ticket[j].departure = F_details[i].Timing;
+                                Ticket[j].arrival = F_details[i].Timing2;
+                                Ticket[j].getDate.dd = getDate.dd;
+                                Ticket[j].getDate.mm = getDate.mm;
+                                Ticket[j].getDate.yyyy = getDate.yyyy;
+                            }
+                            printf("Do you want to checkout? y/n");
+                            char YN[1];
+                            scanf("%s", YN);
+                            if (strcmp(YN, "y") == 0)
+                            {
+                                for (int j = 0; j < pass_no; j++)
+                                {
+                                    fprintf(ticket, "Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : \
+                                    %s\nDestination : %s\nDeparture time : %s\nArrival time : %s\n\
+                                    Date of Boarding : %02d/%02d/%d\nMobile No.: %d\n", Ticket[j].name, Ticket[j].age, \
+                                    Ticket[j].class, Ticket[j].seat_price, Ticket[j].source, Ticket[j].destination, \
+                                    Ticket[j].departure, Ticket[j].arrival, Ticket[j].getDate.dd, Ticket[j].getDate.mm,\
+                                    Ticket[j].getDate.yyyy, Ticket[j].mobile_no);
+                                }
+                                fprintf(ticket, "Total Fare : %.1f\n\n\n",price);
+                                printf("Your Ticket Booked Successfully !\n");
+                                printf("HAPPY JOURNEY ! :)\n");
+                                printf("Your Bill:\n");
+                                printf("=============================================================\n");
+                                for (int j = 0; j < pass_no; j++)
+                                {
+                                    printf("Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : \
+                                    %s\nDestination : %s\nDeparture time : %s\nArrival time : %s\n\
+                                    Date of Boarding : %02d/%02d/%d\nMobile No.: %d\n", Ticket[j].name, Ticket[j].age, \
+                                    Ticket[j].class, Ticket[j].seat_price, Ticket[j].source, Ticket[j].destination, \
+                                    Ticket[j].departure, Ticket[j].arrival, Ticket[j].getDate.dd, Ticket[j].getDate.mm,\
+                                    Ticket[j].getDate.yyyy, Ticket[j].mobile_no);
+                                    printf("\n---------------------------------------------------------\n");
+                                }
+                                printf("\n\n=============================================================\n");
+                                printf("Total Fare : %.1f\n\n\n",price);
+                                printf("=============================================================\n");
+                                free(Ticket);
+                                printf("Do you want to book more seats? y/n\n");
+                                char Bool1[1];
+                                scanf("%s", Bool1);
+                                if (strcmp(Bool1, "y") == 0)
+                                {
+                                    app_mode = 0;
+                                    main(app_mode);
+                                }
+                                else
+                                {
+                                    printf("Thank you for booking ticket with us\n");
+                                    printf("Hope to see you again! :)\n");
+                                    exit(1);
+                                }
+
+                            }
+                            else
+                            {
+                                free(Ticket);
+                                printf("Do you want to book again? y/n\n");
+                                char Bool[1];
+                                scanf("%s", Bool);
+                                if (strcmp(Bool, "y") == 0)
+                                {
+                                    main(app_mode);
                                 }
                                 else
                                 {
@@ -378,40 +525,24 @@ int main()
                                 
                             }
                             
-                            
-
                         }
-                        else
-                        {
-                            
-                        }
-                        
-                        
                     }
                     else
                     {
-                        fprintf(fp_mod, "%s %s %d %d %.1f %d %d %.1f\n", F_details[i].FLight_id, F_details[i].Timing, \
-                        F_details[i].seats_available_e, F_details[i].total_seats_e, F_details[i].fare_economy, \
+                        fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[i].FLight_id, F_details[i].Timing, \
+                        F_details[i].Timing2, F_details[i].seats_available_e, F_details[i].total_seats_e, F_details[i].fare_economy, \
                         F_details[i].seats_available_b, F_details[i].total_seats_b, F_details[i].fare_business);
                     }
-                    
-
                 }
             }
             else
             {
                 fputs(board_to_dest, fp_mod);
             }
-            
         }
         else
         {
             fputs(buffer, fp_mod);
         }
-        
-        
     }
-    
-    
-    
 }
