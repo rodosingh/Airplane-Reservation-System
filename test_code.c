@@ -292,49 +292,47 @@ int main(int app_mode)
                 }
                 printf("\n");
                 free(Flight_line);//free up the used up space
-
-                printf("Choose your Plane by its Id\n");
-                char Id[5];
-                scanf("%s", Id);
-                flight_details* F_details = malloc(sizeof(flight_details) * 6);
-                for (int i = 0; i < 6; i++)
+                printf("Do you want to go further? y/n\n");
+                char Bt[1];
+                if (strcmp(Bt, "y")==0)
                 {
-                    char * flight_name = malloc(sizeof(char)*(5+1));
-                    char * timing = malloc(sizeof(char)*(5+1));
-                    char * timing2 = malloc(sizeof(char)*(5+1));
-                    flight_name[6] = '\0';
-                    timing[6] = '\0';
-                    int eco_seats_avail, tot_eco, bus_seats_avail, tot_bus;
-                    float eco_fare, bus_fare;
-                    // now let's read from the file
-                    fscanf(fp_orig, "%s %s %d %d %.1f %d %d %.1f", flight_name, timing, timing2, &eco_seats_avail,\
-                     &tot_eco, &eco_fare, &bus_seats_avail, &tot_bus, &bus_fare);
-                    F_details[i].FLight_id = flight_name;
-                    F_details[i].Timing = timing;
-                    F_details[i].Timing2 = timing2;
-                    F_details[i].seats_available_e = eco_seats_avail;
-                    F_details[i].total_seats_e = tot_eco;
-                    F_details[i].fare_economy = eco_fare;
-                    F_details[i].seats_available_b = bus_seats_avail;
-                    F_details[i].total_seats_b = tot_bus;
-                    F_details[i].fare_business = bus_fare;
-                    free(flight_name);
-                    free(timing);
-                    free(timing2);
-                    if (strcmp(Id, F_details[i].FLight_id)==0)
+                    printf("Choose your Plane by its Id\n");
+                    char Id[5];
+                    scanf("%s", Id);
+                    flight_details* F_details = malloc(sizeof(flight_details) * 6);
+                    for (int i = 0; i < 6; i++)
                     {
-                        char BE[1];
-                        printf("In which class you wanna travel? Economy class or Business class.\n");
-                        printf("Enter 'B' for Business Class and 'E' for Economy Class -- ");
-                        scanf("%s", BE);
-                        if (strcmp(BE, "B")==0)
+                        char * flight_name = malloc(sizeof(char)*(5+1));
+                        char * timing = malloc(sizeof(char)*(5+1));
+                        char * timing2 = malloc(sizeof(char)*(5+1));
+                        flight_name[6] = '\0';
+                        timing[6] = '\0';
+                        int eco_seats_avail, tot_eco, bus_seats_avail, tot_bus;
+                        float eco_fare, bus_fare;
+                        // now let's read from the file
+                        fscanf(fp_orig, "%s %s %d %d %.1f %d %d %.1f", flight_name, timing, timing2, &eco_seats_avail,\
+                        &tot_eco, &eco_fare, &bus_seats_avail, &tot_bus, &bus_fare);
+                        F_details[i].FLight_id = flight_name;
+                        F_details[i].Timing = timing;
+                        F_details[i].Timing2 = timing2;
+                        F_details[i].seats_available_e = eco_seats_avail;
+                        F_details[i].total_seats_e = tot_eco;
+                        F_details[i].fare_economy = eco_fare;
+                        F_details[i].seats_available_b = bus_seats_avail;
+                        F_details[i].total_seats_b = tot_bus;
+                        F_details[i].fare_business = bus_fare;
+                        free(flight_name);
+                        free(timing);
+                        free(timing2);
+                        if (strcmp(Id, F_details[i].FLight_id)==0)
                         {
                             printf("Enter no. of Travellers : ");
                             int pass_no;
                             scanf("%d", &pass_no);
-                            F_details[i].seats_available_b -= pass_no;
+                            //F_details[i].seats_available_b -= pass_no;
                             traveller_details* Ticket = malloc(sizeof(traveller_details)*pass_no);
                             float price =  0.0;
+                            int bus_ctr = 0, eco_ctr = 0;
                             for (int j = 0; j < pass_no; j++)
                             {
                                 printf("\nEnter details for traveller no. %d : \n", (j+1));
@@ -350,9 +348,26 @@ int main(int app_mode)
                                 int mobile;
                                 scanf("%d", &mobile);
                                 Ticket[j].mobile_no = mobile;
-                                Ticket[j].class = BE;
-                                Ticket[j].seat_price = F_details[i].fare_business;
-                                price += Ticket[j].seat_price;
+                                char BE[1];
+                                printf("In which class %s wanna travel? Economy class or Business class.\n", Ticket[j].name);
+                                printf("Enter 'B' for Business Class and 'E' for Economy Class -- ");
+                                scanf("%s", BE);
+                                if (strcmp(BE, "B")==0)
+                                {
+                                    Ticket[j].class = BE;
+                                    Ticket[j].seat_price = F_details[i].fare_business;
+                                    price += Ticket[j].seat_price;
+                                    F_details[i].seats_available_b--;
+                                    bus_ctr++;
+                                }
+                                else
+                                {
+                                    Ticket[j].class = BE;
+                                    Ticket[j].seat_price = F_details[i].fare_economy;
+                                    price += Ticket[j].seat_price;
+                                    F_details[i].seats_available_e--;
+                                    eco_ctr++;
+                                }
                                 sscanf(board_to_dest, "%s %*s %s", Ticket[j].source, Ticket[j].destination);
                                 Ticket[j].departure = F_details[i].Timing;
                                 Ticket[j].arrival = F_details[i].Timing2;
@@ -360,6 +375,7 @@ int main(int app_mode)
                                 Ticket[j].getDate.mm = getDate.mm;
                                 Ticket[j].getDate.yyyy = getDate.yyyy;
                             }
+                            
                             printf("Do you want to checkout? y/n");
                             char YN[1];
                             scanf("%s", YN);
@@ -407,11 +423,18 @@ int main(int app_mode)
                                     printf("Hope to see you again! :)\n");
                                     exit(1);
                                 }
-
+                                fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[i].FLight_id, F_details[i].Timing, \
+                                F_details[i].Timing2, F_details[i].seats_available_e, F_details[i].total_seats_e, F_details[i].fare_economy, \
+                                F_details[i].seats_available_b, F_details[i].total_seats_b, F_details[i].fare_business);
                             }
                             else
                             {
                                 free(Ticket);
+                                F_details[i].seats_available_e += eco_ctr;
+                                F_details[i].seats_available_b += bus_ctr;
+                                fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[i].FLight_id, F_details[i].Timing, \
+                                F_details[i].Timing2, F_details[i].seats_available_e, F_details[i].total_seats_e, F_details[i].fare_economy, \
+                                F_details[i].seats_available_b, F_details[i].total_seats_b, F_details[i].fare_business);
                                 printf("Do you want to book again? y/n\n");
                                 char Bool[1];
                                 scanf("%s", Bool);
@@ -423,116 +446,21 @@ int main(int app_mode)
                                 {
                                     exit(1);
                                 }
-                                
                             }
                         }
                         else
                         {
-                            printf("Enter no. of Travellers : ");
-                            int pass_no;
-                            scanf("%d", &pass_no);
-                            F_details[i].seats_available_e -= pass_no;
-                            traveller_details* Ticket = malloc(sizeof(traveller_details)*pass_no);
-                            float price =  0.0;
-                            for (int j = 0; j < pass_no; j++)
-                            {
-                                printf("\nEnter details for traveller no. %d : \n", (j+1));
-                                printf("Enter name : ");
-                                char traveller_name[50];
-                                scanf("%s", traveller_name);
-                                Ticket[j].name = traveller_name;
-                                printf("\nEnter your age : ");
-                                int age_name;
-                                scanf("%d", &age_name);
-                                Ticket[j].age = age_name;
-                                printf("\nEnter your Mobile Number ; ");
-                                int mobile;
-                                scanf("%d", &mobile);
-                                Ticket[j].mobile_no = mobile;
-                                Ticket[j].class = BE;
-                                Ticket[j].seat_price = F_details[i].fare_business;
-                                price += Ticket[j].seat_price;
-                                sscanf(board_to_dest, "%s %*s %s", Ticket[j].source, Ticket[j].destination);
-                                Ticket[j].departure = F_details[i].Timing;
-                                Ticket[j].arrival = F_details[i].Timing2;
-                                Ticket[j].getDate.dd = getDate.dd;
-                                Ticket[j].getDate.mm = getDate.mm;
-                                Ticket[j].getDate.yyyy = getDate.yyyy;
-                            }
-                            printf("Do you want to checkout? y/n");
-                            char YN[1];
-                            scanf("%s", YN);
-                            if (strcmp(YN, "y") == 0)
-                            {
-                                for (int j = 0; j < pass_no; j++)
-                                {
-                                    fprintf(ticket, "Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : \
-                                    %s\nDestination : %s\nDeparture time : %s\nArrival time : %s\n\
-                                    Date of Boarding : %02d/%02d/%d\nMobile No.: %d\n", Ticket[j].name, Ticket[j].age, \
-                                    Ticket[j].class, Ticket[j].seat_price, Ticket[j].source, Ticket[j].destination, \
-                                    Ticket[j].departure, Ticket[j].arrival, Ticket[j].getDate.dd, Ticket[j].getDate.mm,\
-                                    Ticket[j].getDate.yyyy, Ticket[j].mobile_no);
-                                }
-                                fprintf(ticket, "Total Fare : %.1f\n\n\n",price);
-                                printf("Your Ticket Booked Successfully !\n");
-                                printf("HAPPY JOURNEY ! :)\n");
-                                printf("Your Bill:\n");
-                                printf("=============================================================\n");
-                                for (int j = 0; j < pass_no; j++)
-                                {
-                                    printf("Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : \
-                                    %s\nDestination : %s\nDeparture time : %s\nArrival time : %s\n\
-                                    Date of Boarding : %02d/%02d/%d\nMobile No.: %d\n", Ticket[j].name, Ticket[j].age, \
-                                    Ticket[j].class, Ticket[j].seat_price, Ticket[j].source, Ticket[j].destination, \
-                                    Ticket[j].departure, Ticket[j].arrival, Ticket[j].getDate.dd, Ticket[j].getDate.mm,\
-                                    Ticket[j].getDate.yyyy, Ticket[j].mobile_no);
-                                    printf("\n---------------------------------------------------------\n");
-                                }
-                                printf("\n\n=============================================================\n");
-                                printf("Total Fare : %.1f\n\n\n",price);
-                                printf("=============================================================\n");
-                                free(Ticket);
-                                printf("Do you want to book more seats? y/n\n");
-                                char Bool1[1];
-                                scanf("%s", Bool1);
-                                if (strcmp(Bool1, "y") == 0)
-                                {
-                                    app_mode = 0;
-                                    main(app_mode);
-                                }
-                                else
-                                {
-                                    printf("Thank you for booking ticket with us\n");
-                                    printf("Hope to see you again! :)\n");
-                                    exit(1);
-                                }
-
-                            }
-                            else
-                            {
-                                free(Ticket);
-                                printf("Do you want to book again? y/n\n");
-                                char Bool[1];
-                                scanf("%s", Bool);
-                                if (strcmp(Bool, "y") == 0)
-                                {
-                                    main(app_mode);
-                                }
-                                else
-                                {
-                                    exit(1);
-                                }
-                                
-                            }
-                            
+                            fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[i].FLight_id, F_details[i].Timing, \
+                            F_details[i].Timing2, F_details[i].seats_available_e, F_details[i].total_seats_e, F_details[i].fare_economy, \
+                            F_details[i].seats_available_b, F_details[i].total_seats_b, F_details[i].fare_business);
                         }
                     }
-                    else
-                    {
-                        fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[i].FLight_id, F_details[i].Timing, \
-                        F_details[i].Timing2, F_details[i].seats_available_e, F_details[i].total_seats_e, F_details[i].fare_economy, \
-                        F_details[i].seats_available_b, F_details[i].total_seats_b, F_details[i].fare_business);
-                    }
+                }
+                else
+                {
+                    printf("Hope you enjoyed the booking experience!\n");
+                    printf("See you later...\n");
+                    exit(1);
                 }
             }
             else
