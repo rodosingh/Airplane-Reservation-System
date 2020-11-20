@@ -1,0 +1,15 @@
+Name : wert
+Age :12
+Class : Business
+Fare : 4000.000000
+Source :                                     
+Destination : Hyderabad
+Departure time : 06:00
+Arrival time : 08:00
+                                    Date of Boarding : 23/11/2020
+Mobile No.: 1234567890
+
+
+Total Fare : 8000.000000
+
+
