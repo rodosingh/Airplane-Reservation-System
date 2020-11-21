@@ -1,27 +1,27 @@
-Name : rodo
-Age :12
+Name : rod
+Age :1
 Class : Business
-Fare : 8000.0
+Fare : 2000.0
 Source : NewDelhi                                    
-Destination : Hyderabad
-Departure time : 21:00
-Arrival time : 22:00                                    
+Destination : Mumbai
+Departure time : 14:00
+Arrival time : 15:00                                    
 Date of Boarding : 23/11/2020
-Mobile No.: 123456789
+Mobile No.: 123
 
 
-Name : qwerty
-Age :12
-Class : Economy
-Fare : 5000.0
+Name : wer
+Age :14
+Class : Business
+Fare : 4000.0
 Source : NewDelhi                                    
-Destination : Hyderabad
-Departure time : 21:00
-Arrival time : 22:00                                    
+Destination : Mumbai
+Departure time : 14:00
+Arrival time : 15:00                                    
 Date of Boarding : 23/11/2020
-Mobile No.: 1234567890
+Mobile No.: 1
 
 
-Total Fare : 13000.0
+Total Fare : 6000.0
 
 

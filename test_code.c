@@ -38,6 +38,7 @@ typedef struct TRaveller
     char* name;
     int age;
     char* class;
+    float conv_seat_price;
     float seat_price;
     char* source;
     char* destination;
@@ -161,7 +162,24 @@ char* day_of_week(int date, int month, int year) {
    }*/
    return day;
 }
-
+// price conversion
+float convert(int* age, float* price)
+{
+    float new_price;
+    if (*age < 5)
+    {
+        new_price = 0.25*(*price);
+    }
+    else if(*age<18 && *age>=5)
+    {
+        new_price = 0.5*(*price);
+    }
+    else
+    {
+        new_price = *price;
+    }
+    return new_price;
+}
 // Function to check leap year.
 //Function returns 1 if leap year
 int  IsLeapYear(int year)
@@ -239,7 +257,7 @@ void nextMessage()
     printf("\n\t\t\t\t        =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
     printf("\n\t\t\t\t        =                 WELCOME                   =");
     printf("\n\t\t\t\t        =                   TO                      =");
-    printf("\n\t\t\t\t        =        AIRPLANE RESERVATION SYSTEM        =");
+    printf("\n\t\t\t\t        =             DAARK AIRLINES                =");
     printf("\n\t\t\t\t        =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
     printf("\n\t\t\t\t  **-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**-**\n");
     
@@ -253,21 +271,26 @@ void ADMIN(FILE* fp_orig, FILE* fp_mod)
 {
     Date getDate = {0}; //variable to store date
     char* day = malloc(sizeof(char)*10);
-    printf("Enter the date or day for which you want to modify the flight details : ");
-    scanf("%s", day);
-    printf("\nEnter '0' if you inputted 'date' o/w Enter '1' : ");
-    int dd;
+    printf("\nEnter '1' if you inputted 'date' o/w Enter '0' : ");
+    int de;
+    //char* DAY = malloc(sizeof(char)*10);
     char DAY[10];
-    scanf("%d", &dd);
-    if (dd)
+    scanf("%d", &de);
+    if (de == 1)
     {
+        printf("Enter the Date for which you want to modify the flight details : ");
         scanf("%d/%d/%d",&getDate.dd,&getDate.mm,&getDate.yyyy);
         char * day_of_travel = Day(&getDate);
-        strcpy(DAY, day_of_travel);
+        //printf("date  = %s\n", day_of_travel);
+        strcat(DAY, day_of_travel);
     }
     else
     {
-        strcpy(DAY, day);
+        printf("Enter the Day for which you want to modify the flight details : ");
+        scanf("%s", day);
+        sprintf(DAY, "%s\n", day);
+        /*strcat(DAY, day);
+        strcat(DAY, "\n");*/
     }
     char buffer[100];
     char *board = malloc(sizeof(char)*30);
@@ -276,6 +299,7 @@ void ADMIN(FILE* fp_orig, FILE* fp_mod)
     scanf("%s", board);
     printf("Enter the name of Destination place corresponding to which you want to change flight details : ");
     scanf("%s", dest);
+    //printf("Board = %s", DAY);
     if (!(airport_valid(board) && airport_valid(dest)))
     {
         printf("Please enter a valid airport name!:|\n");
@@ -283,8 +307,10 @@ void ADMIN(FILE* fp_orig, FILE* fp_mod)
     }
     while (fgets(buffer, 100, fp_orig) != NULL)
     {
+        //printf("Board = %s , %s\n", board, dest);
         if (strcmp(DAY, buffer) == 0)
         {
+            printf("Board = %s , %s\n", DAY, buffer);
             // put the whole string line to the fp_mod file.
             fputs(buffer, fp_mod);
             char board_to_dest[100], board_dest[100];
@@ -320,8 +346,8 @@ void ADMIN(FILE* fp_orig, FILE* fp_mod)
                         //copies first 5 letter from the string.
                         strncpy(fl_id, fl_line[i].flt_line, 5);
                         printf("Do you want to change details for flight '%s'? 0/1 \n", fl_id);
-                        char* Id = malloc(sizeof(char)*5);
-                        scanf("%s", Id);
+                        /*char* Id = malloc(sizeof(char)*5);
+                        scanf("%s", Id);*/
                         flight_details* F_details = malloc(sizeof(flight_details) * 1);
                         int chng_details;
                         scanf("%d", &chng_details);
@@ -362,13 +388,13 @@ void ADMIN(FILE* fp_orig, FILE* fp_mod)
                                 printf("\nChange Total Economy Class Seats : ");
                                 scanf("%d", &F_details[0].total_seats_e);
                                 printf("\nChange Economy Class Fare : ");
-                                scanf("%.1f", &F_details[0].fare_economy);
+                                scanf("%f", &F_details[0].fare_economy);
                                 printf("\nChange Business Class Seats Available : ");
                                 scanf("%d", &F_details[0].seats_available_b);
                                 printf("\nChange flight departure time : ");
                                 scanf("%d", &F_details[0].total_seats_b);
                                 printf("\nChange flight departure time : ");
-                                scanf("%.1f", &F_details[0].fare_business);
+                                scanf("%f", &F_details[0].fare_business);
                                 fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[0].FLight_id, F_details[0].Timing, \
                                 F_details[0].Timing2, F_details[0].seats_available_e, F_details[0].total_seats_e, F_details[0].fare_economy, \
                                 F_details[0].seats_available_b, F_details[0].total_seats_b, F_details[0].fare_business);
@@ -381,17 +407,7 @@ void ADMIN(FILE* fp_orig, FILE* fp_mod)
                         
                         
                     }
-                    printf("Do you want to modify details for some extra flights? 0/1\n");
-                    int mod_flights1;
-                    scanf("%d", &mod_flights1);
-                    if (mod_flights1)
-                    {
-                        ADMIN(fp_orig, fp_mod);
-                    }
-                    else
-                    {
-                        printf("Modified Data saved successfully!!!\n");
-                    }
+                    printf("Modified Data saved successfully!!!\n");
                         
                 }
                 else
@@ -400,7 +416,7 @@ void ADMIN(FILE* fp_orig, FILE* fp_mod)
                     {
                         fputs(fl_line[i].flt_line, fp_mod);
                     }
-                    printf("Do you want to modify details of other flights? 0/1\n");
+                    /*printf("Do you want to modify details of other flights? 0/1\n");
                     int mod_flights;
                     scanf("%d", &mod_flights);
                     if (mod_flights)
@@ -410,7 +426,7 @@ void ADMIN(FILE* fp_orig, FILE* fp_mod)
                     else
                     {
                         printf("You haven't changed anything. Seems all correct! :)\n");
-                    }
+                    }*/
                 }
 
             }
@@ -431,10 +447,10 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
 {
     Date getDate = {0}; //variable to store date
     //get date year,month and day from user
-    printf("\n Enter your journey date in format (dd/mm/yyyy): "); // input from the user in dd/mm/yy
+    printf("\nEnter your journey date in format (dd/mm/yyyy): "); // input from the user in dd/mm/yy
     scanf("%d/%d/%d",&getDate.dd,&getDate.mm,&getDate.yyyy);
     char * day_of_travel = Day(&getDate);
-    printf("\t\tAvailable airports: NewDelhi, Mumbai, Kolkata, Chennai, Hyderabad\n");
+    printf("\t\t\tAvailable airports: NewDelhi, Mumbai, Kolkata, Chennai, Hyderabad\n");
     char buffer[100];
     char *board = malloc(sizeof(char)*30);
     char *dest = malloc(sizeof(char)*30);
@@ -542,7 +558,7 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                             for (int j = 0; j < pass_no; j++)
                             {
                                 printf("\nEnter details for traveller no. %d : \n", (j+1));
-                                printf("\nEnter your first name(only) : \n");
+                                printf("\nEnter your last name(only) : \n");
                                 char* traveller_name = malloc(sizeof(char)*50);
                                 scanf("%s", traveller_name);
                                 Ticket[j].name = traveller_name;
@@ -555,14 +571,15 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                                 scanf("%ld", &mobile);
                                 Ticket[j].mobile_no = mobile;
                                 char BE[1];
-                                printf("\nIn which class %s wanna travel? Economy class or Business class.\n", Ticket[j].name);
+                                printf("\nIn which class '%s' wanna travel? Economy class or Business class.\n", Ticket[j].name);
                                 printf("Enter 'B' for Business Class and 'E' for Economy Class -- \n");
                                 scanf("%s", BE);
                                 if (strcmp(BE, "B")==0)
                                 {
                                     Ticket[j].class = "Business";
                                     Ticket[j].seat_price = F_details[i].fare_business;
-                                    price += Ticket[j].seat_price;
+                                    Ticket[j].conv_seat_price = convert(&Ticket[j].age, &Ticket[j].seat_price);
+                                    price += Ticket[j].conv_seat_price;
                                     F_details[i].seats_available_b -= 1;
                                     bus_ctr++;
                                 }
@@ -570,7 +587,8 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                                 {
                                     Ticket[j].class = "Economy";
                                     Ticket[j].seat_price = F_details[i].fare_economy;
-                                    price += Ticket[j].seat_price;
+                                    Ticket[j].conv_seat_price = convert(&Ticket[j].age, &Ticket[j].seat_price);
+                                    price += Ticket[j].conv_seat_price;
                                     F_details[i].seats_available_e -= 1;
                                     eco_ctr++;
                                 }
@@ -600,7 +618,7 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                                 for (int j = 0; j < pass_no1; j++)
                                 {
                                     printf("\nEnter details for traveller no. %d : \n", (pass_no + j+1));
-                                    printf("\nEnter your first name(only) : \n");
+                                    printf("\nEnter your last name(only) : \n");
                                     char* traveller_name1 = malloc(sizeof(char)*50);
                                     scanf("%s", traveller_name1);
                                     Ticket1[j].name = traveller_name1;
@@ -613,14 +631,15 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                                     scanf("%ld", &mobile1);
                                     Ticket1[j].mobile_no = mobile1;
                                     char BE1[1];
-                                    printf("\nIn which class %s wanna travel? Economy class or Business class.\n", Ticket1[j].name);
+                                    printf("\nIn which class '%s' wanna travel? Economy class or Business class.\n", Ticket1[j].name);
                                     printf("Enter 'B' for Business Class and 'E' for Economy Class -- \n");
                                     scanf("%s", BE1);
                                     if (strcmp(BE1, "B")==0)
                                     {
                                         Ticket1[j].class = "Business";
                                         Ticket1[j].seat_price = F_details[i].fare_business;
-                                        price += Ticket1[j].seat_price;
+                                        Ticket1[j].conv_seat_price = convert(&Ticket1[j].age, &Ticket1[j].seat_price);
+                                        price += Ticket1[j].conv_seat_price;
                                         F_details[i].seats_available_b -= 1;
                                         bus_ctr1++;
                                     }
@@ -628,7 +647,8 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                                     {
                                         Ticket1[j].class = "Economy";
                                         Ticket1[j].seat_price = F_details[i].fare_economy;
-                                        price += Ticket1[j].seat_price;
+                                        Ticket1[j].conv_seat_price = convert(&Ticket1[j].age, &Ticket1[j].seat_price);
+                                        price += Ticket1[j].conv_seat_price;
                                         F_details[i].seats_available_e -= 1;
                                         eco_ctr1++;
                                     }
@@ -668,7 +688,7 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                                     fprintf(ticket, "Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : %s\
                                     \nDestination : %s\nDeparture time : %s\nArrival time : %s\
                                     \nDate of Boarding : %02d/%02d/%d\nMobile No.: %ld\n\n\n", Ticket[j].name, Ticket[j].age, \
-                                    Ticket[j].class, Ticket[j].seat_price, Ticket[j].source, Ticket[j].destination, \
+                                    Ticket[j].class, Ticket[j].conv_seat_price, Ticket[j].source, Ticket[j].destination, \
                                     Ticket[j].departure, Ticket[j].arrival, Ticket[j].getDate.dd, Ticket[j].getDate.mm,\
                                     Ticket[j].getDate.yyyy, Ticket[j].mobile_no);
                                 }
@@ -683,7 +703,7 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                                         fprintf(ticket, "Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : %s\
                                         \nDestination : %s\nDeparture time : %s\nArrival time : %s\
                                         \nDate of Boarding : %d/%d/%d\nMobile No.: %ld\n\n\n", Ticket1[j].name, Ticket1[j].age, \
-                                        Ticket1[j].class, Ticket1[j].seat_price, Ticket1[j].source, Ticket1[j].destination, \
+                                        Ticket1[j].class, Ticket1[j].conv_seat_price, Ticket1[j].source, Ticket1[j].destination, \
                                         Ticket1[j].departure, Ticket1[j].arrival, Ticket1[j].getDate.dd, Ticket1[j].getDate.mm,\
                                         Ticket1[j].getDate.yyyy, Ticket1[j].mobile_no);
                                     }
@@ -700,7 +720,7 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                                     printf("Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : %s\
                                     \nDestination : %s\nDeparture time : %s\nArrival time : %s\
                                     \nDate of Boarding : %d/%d/%d\nMobile No.: %ld\n", Ticket[j].name, Ticket[j].age, \
-                                    Ticket[j].class, Ticket[j].seat_price, Ticket[j].source, Ticket[j].destination, \
+                                    Ticket[j].class, Ticket[j].conv_seat_price, Ticket[j].source, Ticket[j].destination, \
                                     Ticket[j].departure, Ticket[j].arrival, Ticket[j].getDate.dd, Ticket[j].getDate.mm,\
                                     Ticket[j].getDate.yyyy, Ticket[j].mobile_no);
                                     printf("\n---------------------------------------------------------\n");
@@ -716,7 +736,7 @@ void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
                                         printf("Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : %s\
                                         \nDestination : %s\nDeparture time : %s\nArrival time : %s\
                                         \nDate of Boarding : %d/%d/%d\nMobile No.: %ld\n", Ticket1[j].name, Ticket1[j].age, \
-                                        Ticket1[j].class, Ticket1[j].seat_price, Ticket1[j].source, Ticket1[j].destination, \
+                                        Ticket1[j].class, Ticket1[j].conv_seat_price, Ticket1[j].source, Ticket1[j].destination, \
                                         Ticket1[j].departure, Ticket1[j].arrival, Ticket1[j].getDate.dd, Ticket1[j].getDate.mm,\
                                         Ticket1[j].getDate.yyyy, Ticket1[j].mobile_no);
                                         printf("\n---------------------------------------------------------\n");
@@ -855,7 +875,7 @@ int main()
                     char* passwd = malloc(sizeof(char)*20);
                     fgets(user_admin_str, 50, user_admin);
                     sscanf(user_admin_str, "%s %s\n", userid, passwd);
-                    if (strcmp(userid, q) == 0 && strcmp(passwd, n) == 0)
+                    if (strcmp(userid, s) == 0 && strcmp(passwd, m) == 0)
                     {
                         t = 1;
                         break;

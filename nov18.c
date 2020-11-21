@@ -62,8 +62,25 @@ int airport_valid(char* airplane_name)
     }
     return ctr;
 }
-
-int main(){
+float convert(int* age, float* price)
+{
+    float new_price;
+    if (*age < 5)
+    {
+        new_price = 0.25*(*price);
+    }
+    else if(*age<18 && *age>=5)
+    {
+        new_price = 0.5*(*price);
+    }
+    else
+    {
+        new_price = *price;
+    }
+    return new_price;
+}
+int main()
+{
     char buffer[100], timb[] = "ertig";
     FILE * fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/user_admin_data.txt", "r");
     //FILE * fp_mod = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt", "w");
@@ -125,7 +142,7 @@ int main(){
     sscanf(num, "%d", &kal);
     printf("Kal = %d\n", (kal*100+kal));
     printf("Print the ul : %s\n", num);*/
-
+    /*
     // takes a whole line as input.
     char str[20]; 
     scanf("%[^\n]%*c", str); 
@@ -134,8 +151,13 @@ int main(){
 
     fgets(nume, 100, stdin);
     printf("Nume = %s\n",nume);
+    */
 
-    
+    int age = 1;
+    float price = 5000.0;
+    float n_p = convert(&age, &price);
+
+    printf("New_price = %.1f \n", n_p);
     char airp[] = "Mumbai";
     airp[6] = '\0';
     printf("Airport = %s\n", airp);
@@ -160,8 +182,7 @@ int main(){
             continue;
         }
     }*/
-    float f = 2.3;
-    printf("Float  =  %.1f\n", f);
+    
 
     if (strcmp(nume, airp)==0)
     {
