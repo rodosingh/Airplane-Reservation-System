@@ -65,16 +65,18 @@ int airport_valid(char* airplane_name)
 
 int main(){
     char buffer[100], timb[] = "ertig";
-    /*FILE * fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt", "r");
-    FILE * fp_mod = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt", "w");
+    FILE * fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/user_admin_data.txt", "r");
+    //FILE * fp_mod = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt", "w");
     
     while (fgets(buffer, 100, fp_orig) != NULL)
     {
-        if(strcmp(buffer, "Monday\n") == 0)
+        /*if(strcmp(buffer, "USER\n") == 0)
         {
             printf("Hurrraya\n");
-        }
-        fputs(buffer, fp_mod);
+        }*/
+        printf("fgets = %s", buffer);
+        break;
+        
     }
     //nameTable.name = ch;
     //printf("nametable = %s\n", nameTable.name);
@@ -104,7 +106,7 @@ int main(){
     /*char* p = malloc(strlen(buffer)*sizeof(char));
     p = buffer;
     p[strlen(p)-1] = '\0';*/
-    char board[] = "New Delhi", dest[] = "Mumba";
+    char board[] = "New Delhi", dest[] = "Mumbai";
     if (!(airport_valid(board) && airport_valid(dest)))
     {
         printf("Please enter a valid airport name!:|\n");
@@ -115,22 +117,35 @@ int main(){
     printf("enter name = \n");
     //scanf("%s",nume);
     char sed[] = "New Delhi", sed1[] = "Mumbai";
-    sprintf(nume, "%s to %s\n", sed, sed1);
-    printf("Nume = %s\n",nume);
-    //printf("num = %s, nume = %s\n", num, nume);
+    /*//sprintf(nume, "%s to %s\n", sed, sed1);
+    //
+    char* kur = malloc(sizeof(char)*3);
+    strncpy(kur, nume, 3);
+    printf("kur = %s\n", kur);
     sscanf(num, "%d", &kal);
     printf("Kal = %d\n", (kal*100+kal));
-    printf("Print the ul : %s\n", num);
+    printf("Print the ul : %s\n", num);*/
+
+    // takes a whole line as input.
+    char str[20]; 
+    scanf("%[^\n]%*c", str); 
+    printf("%s\n", str); 
+    // another technique to take whole line as input.
+
+    fgets(nume, 100, stdin);
+    printf("Nume = %s\n",nume);
+
+    
     char airp[] = "Mumbai";
     airp[6] = '\0';
     printf("Airport = %s\n", airp);
     char s[1];
-    scanf("%s", s);
+    /*scanf("%s", s);
     if (strcmp(s, "s")==0)
     {
         printf("s = %s\n", s);
-    }
-    for(int i = 0; i<5; i++)
+    }*/
+    /*for(int i = 0; i<5; i++)
     {
         for(int j = 0; j < 5; j++)
         {
@@ -144,7 +159,10 @@ int main(){
         {
             continue;
         }
-    }
+    }*/
+    float f = 2.3;
+    printf("Float  =  %.1f\n", f);
+
     if (strcmp(nume, airp)==0)
     {
         printf("Aa gaye hum\n!");

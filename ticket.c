@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
+//#include <ctype.h>
 #include <stdlib.h>
 typedef struct Admin
 {
@@ -75,8 +75,8 @@ int main(void)
         {
             printf("INVALID CREDENTIALS\n");
 
-            printf("%s\t%s\n", q, n);
-            printf("%s\t%s\n", customer[1].cust_name, customer[1].cust_pass);
+            /*printf("%s\t%s\n", q, n);
+            printf("%s\t%s\n", customer[1].cust_name, customer[1].cust_pass);*/
         }
     }
     else

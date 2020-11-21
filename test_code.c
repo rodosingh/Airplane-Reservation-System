@@ -77,7 +77,8 @@ int airport_valid(char* airplane_name)
     int ctr = 0;
     for (int i = 0; i < 5; i++)
     {
-        //printf("Ports = %s\n", ports[i]);
+        //printf("name = %s\n", airplane_name);
+        //printf("ports[i] = %s\n", ports[i]);
         if (strcmp(airplane_name, ports[i]) == 0)
         {
             //printf("any prob = %d\n", ctr);
@@ -248,44 +249,195 @@ void nextMessage()
     printf("\n\n\n\t\t\t Press 'Enter key' to continue.....");
     getchar();
 }
-
-int main()
+void ADMIN(FILE* fp_orig, FILE* fp_mod)
 {
-    nextMessage();
-    FILE * fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt", "r");
-    FILE * fp_mod = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt", "w");
-    FILE * ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "w");
-    /*if (app_mode)
+    Date getDate = {0}; //variable to store date
+    char* day = malloc(sizeof(char)*10);
+    printf("Enter the date or day for which you want to modify the flight details : ");
+    scanf("%s", day);
+    printf("\nEnter '0' if you inputted 'date' o/w Enter '1' : ");
+    int dd;
+    char DAY[10];
+    scanf("%d", &dd);
+    if (dd)
     {
-        ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "w");
+        scanf("%d/%d/%d",&getDate.dd,&getDate.mm,&getDate.yyyy);
+        char * day_of_travel = Day(&getDate);
+        strcpy(DAY, day_of_travel);
     }
     else
     {
-        ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "a");
-    }*/
-    
-    if (fp_mod == NULL)
-    {
-        /* Unable to open file hence exit */
-        printf("\nUnable to open airline_database_mod.txt file.\n");
-        printf("Please check whether file exists and you have write privilege.\n");
-        exit(EXIT_FAILURE);
+        strcpy(DAY, day);
     }
-    if (ticket == NULL)
+    char buffer[100];
+    char *board = malloc(sizeof(char)*30);
+    char *dest = malloc(sizeof(char)*30);
+    printf("Enter the name of Boarding place corresponding to which you want to change flight details : ");
+    scanf("%s", board);
+    printf("Enter the name of Destination place corresponding to which you want to change flight details : ");
+    scanf("%s", dest);
+    if (!(airport_valid(board) && airport_valid(dest)))
     {
-        /* Unable to open file hence exit */
-        printf("\nUnable to open Ticket.txt file.\n");
-        printf("Please check whether file exists and you have write privilege.\n");
-        exit(EXIT_FAILURE);
+        printf("Please enter a valid airport name!:|\n");
+        ADMIN(fp_orig, fp_mod);
     }
+    while (fgets(buffer, 100, fp_orig) != NULL)
+    {
+        if (strcmp(DAY, buffer) == 0)
+        {
+            // put the whole string line to the fp_mod file.
+            fputs(buffer, fp_mod);
+            char board_to_dest[100], board_dest[100];
+            fgets(board_to_dest, 100, fp_orig);
+            sprintf(board_dest, "%s to %s\n", board, dest);
+            if (strcmp(board_to_dest, board_dest)==0)
+            {
+                // write to the new file fp_mod
+                fputs(board_to_dest, fp_mod);
+                //allocate a matrix shape memory space to flight_line struct
+                flight_lines* fl_line = malloc(sizeof(flight_lines) * 6);
+                printf("Available flights on %s\n", DAY);
+                printf("\n======================================================\n");
+                printf("\nFlit-ID Dept. Arrv. Eco Ect EcoCost Bus But BusCost\n");
+                printf("------------------------------------------------------\n");
+                for (int i = 0; i < 6; i++)
+                {
+                    char* flight_line = malloc(sizeof(char)*(100));
+                    fgets(flight_line, sizeof(char)*100, fp_orig);
+                    printf("* %s", flight_line);
+                    fl_line[i].flt_line = flight_line;
+                }
+                printf("\n======================================================\n");
+                printf("\n");
+                printf("Do you want to change anything here ? y/n\n");
+                char Bt[1];
+                scanf("%s", Bt);
+                if (strcmp(Bt, "y")==0)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        char * fl_id = malloc(sizeof(char)*5);
+                        //copies first 5 letter from the string.
+                        strncpy(fl_id, fl_line[i].flt_line, 5);
+                        printf("Do you want to change details for flight '%s'? 0/1 \n", fl_id);
+                        char* Id = malloc(sizeof(char)*5);
+                        scanf("%s", Id);
+                        flight_details* F_details = malloc(sizeof(flight_details) * 1);
+                        int chng_details;
+                        scanf("%d", &chng_details);
+                        if (chng_details)
+                        {
+                            printf("Do you want to change flight ID? 1/0\n");
+                            int flid;
+                            scanf("%d", &flid);
+                            if (flid)
+                            {
+                                printf("Enter flight ID : ");
+                                char * name_flight = malloc(sizeof(char)*5);
+                                scanf("%s", name_flight);
+                                F_details[0].FLight_id = name_flight;
+                            }
+                            else
+                            {
+                                F_details[0].FLight_id = fl_id;
+                            }
+                            printf("Do you want to write something else? 0/1\n");
+                            int line_p;
+                            scanf("%d", &line_p);
+                            if (line_p)
+                            {
+                                char add_line[100];
+                                printf("Type what you want to write...\n");
+                                fgets(add_line, 100, stdin);
+                                fputs(add_line, fp_mod);
+                            }
+                            else
+                            {
+                                printf("\nChange flight departure time : ");
+                                scanf("%s", F_details[0].Timing);
+                                printf("\nChange flight Arrival time : ");
+                                scanf("%s", F_details[0].Timing2);
+                                printf("\nChange Economy Class seats available : ");
+                                scanf("%d", &F_details[0].seats_available_e);
+                                printf("\nChange Total Economy Class Seats : ");
+                                scanf("%d", &F_details[0].total_seats_e);
+                                printf("\nChange Economy Class Fare : ");
+                                scanf("%.1f", &F_details[0].fare_economy);
+                                printf("\nChange Business Class Seats Available : ");
+                                scanf("%d", &F_details[0].seats_available_b);
+                                printf("\nChange flight departure time : ");
+                                scanf("%d", &F_details[0].total_seats_b);
+                                printf("\nChange flight departure time : ");
+                                scanf("%.1f", &F_details[0].fare_business);
+                                fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[0].FLight_id, F_details[0].Timing, \
+                                F_details[0].Timing2, F_details[0].seats_available_e, F_details[0].total_seats_e, F_details[0].fare_economy, \
+                                F_details[0].seats_available_b, F_details[0].total_seats_b, F_details[0].fare_business);
+                            }   
+                        }
+                        else
+                        {
+                            fputs(fl_line[i].flt_line, fp_mod);
+                        }
+                        
+                        
+                    }
+                    printf("Do you want to modify details for some extra flights? 0/1\n");
+                    int mod_flights1;
+                    scanf("%d", &mod_flights1);
+                    if (mod_flights1)
+                    {
+                        ADMIN(fp_orig, fp_mod);
+                    }
+                    else
+                    {
+                        printf("Modified Data saved successfully!!!\n");
+                    }
+                        
+                }
+                else
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        fputs(fl_line[i].flt_line, fp_mod);
+                    }
+                    printf("Do you want to modify details of other flights? 0/1\n");
+                    int mod_flights;
+                    scanf("%d", &mod_flights);
+                    if (mod_flights)
+                    {
+                        ADMIN(fp_orig, fp_mod);
+                    }
+                    else
+                    {
+                        printf("You haven't changed anything. Seems all correct! :)\n");
+                    }
+                }
 
+            }
+            else
+            {
+                fputs(board_to_dest, fp_mod);
+            }
+        }
+        else
+        {
+            fputs(buffer, fp_mod);
+        }
+    }
+        
+}
+
+void USER(FILE* fp_orig, FILE* fp_mod, FILE* ticket)
+{
     Date getDate = {0}; //variable to store date
     //get date year,month and day from user
     printf("\n Enter your journey date in format (dd/mm/yyyy): "); // input from the user in dd/mm/yy
     scanf("%d/%d/%d",&getDate.dd,&getDate.mm,&getDate.yyyy);
     char * day_of_travel = Day(&getDate);
     printf("\t\tAvailable airports: NewDelhi, Mumbai, Kolkata, Chennai, Hyderabad\n");
-    char buffer[100], board[30], dest[30];
+    char buffer[100];
+    char *board = malloc(sizeof(char)*30);
+    char *dest = malloc(sizeof(char)*30);
     printf("Enter your source of Journey : ");
     // always note that string is an array of characters and usually writing that string alone means we are 
     // giving the address of first element of that array = &string[0]. and hence we don't specify "&string" in "scanf".
@@ -298,12 +450,7 @@ int main()
     if (!(airport_valid(board) && airport_valid(dest)))
     {
         printf("Please enter a valid airport name!:|\n");
-        main();
-    }
-    if (fp_orig == NULL)
-    {
-        printf("Error in opening file! :(\n");
-        exit(1);
+        USER(fp_orig, fp_mod, ticket);
     }
     while (fgets(buffer, 100, fp_orig) != NULL)
     {
@@ -332,11 +479,13 @@ int main()
                 flight_lines* fl_line = malloc(sizeof(flight_lines) * 6);
                 printf("Available flights on %s\n", day_of_travel);
                 printf("\n======================================================\n");
+                printf("\nFlit-ID Dept. Arrv. Eco Ect EcoCost Bus But BusCost\n");
+                printf("------------------------------------------------------\n");
                 for (int i = 0; i < 6; i++)
                 {
                     char* flight_line = malloc(sizeof(char)*(100));
                     fgets(flight_line, sizeof(char)*100, fp_orig);
-                    printf("* %s ", flight_line);
+                    printf("* %s", flight_line);
                     fl_line[i].flt_line = flight_line;
                 }
                 printf("\n======================================================\n");
@@ -433,24 +582,24 @@ int main()
                                 Ticket[j].getDate.dd = getDate.dd;
                                 Ticket[j].getDate.mm = getDate.mm;
                                 Ticket[j].getDate.yyyy = getDate.yyyy;
+                                printf("Source = %s\n", Ticket[j].source);
+                                printf("Source_orig = %s\n", board);
                             }
-                            printf("Do you want to book more seats? y/n\n");
+                            printf("Do you want to book more seats? 0/1\n");
+                            printf("Enter 1 for 'yes' otherwise enter 0\n");
                             int pass_no1;
                             traveller_details* Ticket1 = malloc(sizeof(traveller_details)*pass_no1);
                             int bus_ctr1 = 0, eco_ctr1 = 0;
-                            char Bool1[1];
-                            scanf("%s", Bool1);
-                            printf("Bool1_orig  =  %s\n", Bool1);
+                            int Bool1;
+                            scanf("%d", &Bool1);
                             //not needed...continue
-                            if (strcmp(Bool1, "y") == 0)
+                            if (Bool1)
                             {
                                 printf("Enter no. of Travellers : ");
                                 scanf("%d", &pass_no1);
-                                //F_details[i].seats_available_b -= pass_no;
-                                //float price1 =  0.0;
                                 for (int j = 0; j < pass_no1; j++)
                                 {
-                                    printf("\nEnter details for traveller no. %d : \n", (j+1));
+                                    printf("\nEnter details for traveller no. %d : \n", (pass_no + j+1));
                                     printf("\nEnter your first name(only) : \n");
                                     char* traveller_name1 = malloc(sizeof(char)*50);
                                     scanf("%s", traveller_name1);
@@ -464,7 +613,7 @@ int main()
                                     scanf("%ld", &mobile1);
                                     Ticket1[j].mobile_no = mobile1;
                                     char BE1[1];
-                                    printf("\nIn which class %s wanna travel? Economy class or Business class.\n", Ticket[j].name);
+                                    printf("\nIn which class %s wanna travel? Economy class or Business class.\n", Ticket1[j].name);
                                     printf("Enter 'B' for Business Class and 'E' for Economy Class -- \n");
                                     scanf("%s", BE1);
                                     if (strcmp(BE1, "B")==0)
@@ -491,58 +640,82 @@ int main()
                                     Ticket1[j].getDate.dd = getDate.dd;
                                     Ticket1[j].getDate.mm = getDate.mm;
                                     Ticket1[j].getDate.yyyy = getDate.yyyy;
+                                    /*printf("Source = %s\n", Ticket1[j].source);
+                                    printf("Source_orig = %s\n", board);*/
+                                
                                 }
                             }
                             printf("Do you want to checkout? 0/1\n");
                             printf("Enter 1 to checkout otherwise enter 0\n");
                             int YN;
-                            scanf("%s", &YN);
-                            printf("Bool1 = %s\n\n",Bool1);
+                            scanf("%d", &YN);
                             if (YN)
                             {
+                                ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "w");
+                                if (ticket == NULL)
+                                {
+                                    /* Unable to open file hence exit */
+                                    printf("\nUnable to open Ticket.txt file.\n");
+                                    printf("Please check whether file exists and you have write privilege.\n");
+                                    exit(EXIT_FAILURE);
+                                }
                                 for (int j = 0; j < pass_no; j++)
                                 {
-                                    fprintf(ticket, "Name : %s\nAge :%d\nClass : %s\nFare : %f\nSource : \
-                                    %s\nDestination : %s\nDeparture time : %s\nArrival time : %s\n\
-                                    Date of Boarding : %02d/%02d/%d\nMobile No.: %ld\n\n\n", Ticket[j].name, Ticket[j].age, \
+                                    /*always put %s or %d before \(=continuation of code) unless while
+                                    printing there will be an unwanted space. And put \n(=new line) after \ 
+                                    unless there will be huge space before the things that needs to be 
+                                    printed after \ */ 
+                                    fprintf(ticket, "Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : %s\
+                                    \nDestination : %s\nDeparture time : %s\nArrival time : %s\
+                                    \nDate of Boarding : %02d/%02d/%d\nMobile No.: %ld\n\n\n", Ticket[j].name, Ticket[j].age, \
                                     Ticket[j].class, Ticket[j].seat_price, Ticket[j].source, Ticket[j].destination, \
                                     Ticket[j].departure, Ticket[j].arrival, Ticket[j].getDate.dd, Ticket[j].getDate.mm,\
                                     Ticket[j].getDate.yyyy, Ticket[j].mobile_no);
                                 }
-                                printf("Bool12 = %s\n\n",Bool1);
-                                if (strcmp(Bool1, "y")==0)
+                                if (Bool1)
                                 {
                                     for (int j = 0; j < pass_no1; j++)
                                     {
-                                        fprintf(ticket, "Name : %s\nAge :%d\nClass : %s\nFare : %f\nSource : \
-                                        %s\nDestination : %s\nDeparture time : %s\nArrival time : %s\n\
-                                        Date of Boarding : %02d/%02d/%d\nMobile No.: %ld\n\n\n", Ticket1[j].name, Ticket1[j].age, \
+                                        /*always put %s or %d before \(=continuation of code) unless while
+                                        printing there will be an unwanted space. And put \n(=new line) after \ 
+                                        unless there will be huge space before the things that needs to be 
+                                        printed after \ */
+                                        fprintf(ticket, "Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : %s\
+                                        \nDestination : %s\nDeparture time : %s\nArrival time : %s\
+                                        \nDate of Boarding : %d/%d/%d\nMobile No.: %ld\n\n\n", Ticket1[j].name, Ticket1[j].age, \
                                         Ticket1[j].class, Ticket1[j].seat_price, Ticket1[j].source, Ticket1[j].destination, \
                                         Ticket1[j].departure, Ticket1[j].arrival, Ticket1[j].getDate.dd, Ticket1[j].getDate.mm,\
                                         Ticket1[j].getDate.yyyy, Ticket1[j].mobile_no);
                                     }
                                 }
-                                fprintf(ticket, "Total Fare : %f\n\n\n",price);
+                                fprintf(ticket, "Total Fare : %.1f\n\n\n",price);
                                 printf("Your Bill:\n");
                                 printf("=============================================================\n");
                                 for (int j = 0; j < pass_no; j++)
                                 {
-                                    printf("Name : %s\nAge :%d\nClass : %s\nFare : %f\nSource : \
-                                    %s\nDestination : %s\nDeparture time : %s\nArrival time : %s\n\
-                                    Date of Boarding : %02d/%02d/%d\nMobile No.: %ld\n", Ticket[j].name, Ticket[j].age, \
+                                    /*always put %s or %d before \(=continuation of code) unless while
+                                    printing there will be an unwanted space. And put \n(=new line) after \ 
+                                    unless there will be huge space before the things that needs to be 
+                                    printed after \ */
+                                    printf("Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : %s\
+                                    \nDestination : %s\nDeparture time : %s\nArrival time : %s\
+                                    \nDate of Boarding : %d/%d/%d\nMobile No.: %ld\n", Ticket[j].name, Ticket[j].age, \
                                     Ticket[j].class, Ticket[j].seat_price, Ticket[j].source, Ticket[j].destination, \
                                     Ticket[j].departure, Ticket[j].arrival, Ticket[j].getDate.dd, Ticket[j].getDate.mm,\
                                     Ticket[j].getDate.yyyy, Ticket[j].mobile_no);
                                     printf("\n---------------------------------------------------------\n");
                                 }
-                                printf("Bool123 = %s\n\n",Bool1);
-                                if (strcmp(Bool1, "y")==0)
+                                if (Bool1)
                                 {
                                     for (int j = 0; j < pass_no1; j++)
                                     {
-                                        printf("Name : %s\nAge :%d\nClass : %s\nFare : %f\nSource : \
-                                        %s\nDestination : %s\nDeparture time : %s\nArrival time : %s\n\
-                                        Date of Boarding : %02d/%02d/%d\nMobile No.: %ld\n", Ticket1[j].name, Ticket1[j].age, \
+                                        /*always put %s or %d before \(=continuation of code) unless while
+                                        printing there will be an unwanted space. And put \n(=new line) after \ 
+                                        unless there will be huge space before the things that needs to be 
+                                        printed after \ */
+                                        printf("Name : %s\nAge :%d\nClass : %s\nFare : %.1f\nSource : %s\
+                                        \nDestination : %s\nDeparture time : %s\nArrival time : %s\
+                                        \nDate of Boarding : %d/%d/%d\nMobile No.: %ld\n", Ticket1[j].name, Ticket1[j].age, \
                                         Ticket1[j].class, Ticket1[j].seat_price, Ticket1[j].source, Ticket1[j].destination, \
                                         Ticket1[j].departure, Ticket1[j].arrival, Ticket1[j].getDate.dd, Ticket1[j].getDate.mm,\
                                         Ticket1[j].getDate.yyyy, Ticket1[j].mobile_no);
@@ -551,27 +724,28 @@ int main()
                                 }
                                 
                                 printf("\n\n=============================================================\n\n");
-                                printf("Total Fare : %f\n\n",price);
+                                printf("Total Fare : %.1f\n\n",price);
                                 printf("=============================================================\n");
                                 //free(Ticket);
                                 printf("Your Ticket Booked Successfully !\n");
-                                printf("HAPPY JOURNEY ! :)\n");
-                                fprintf(fp_mod, "%s %s %s %d %d %f %d %d %f\n", F_details[i].FLight_id, F_details[i].Timing, \
+                                printf("HAPPY JOURNEY ! :)\n\n\n");
+                                fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[i].FLight_id, F_details[i].Timing, \
                                 F_details[i].Timing2, F_details[i].seats_available_e, F_details[i].total_seats_e, F_details[i].fare_economy, \
                                 F_details[i].seats_available_b, F_details[i].total_seats_b, F_details[i].fare_business);
+                                fclose(ticket);
                             }
                             else
                             {
                                 //free(Ticket);
                                 F_details[i].seats_available_e += eco_ctr;
                                 F_details[i].seats_available_b += bus_ctr;
-                                if (strcmp(Bool1, "y")==0)
+                                if (Bool1)
                                 {
                                     F_details[i].seats_available_e += eco_ctr1;
                                     F_details[i].seats_available_b += bus_ctr1;
                                 }
                                 
-                                fprintf(fp_mod, "%s %s %s %d %d %f %d %d %f\n", F_details[i].FLight_id, F_details[i].Timing, \
+                                fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[i].FLight_id, F_details[i].Timing, \
                                 F_details[i].Timing2, F_details[i].seats_available_e, F_details[i].total_seats_e, F_details[i].fare_economy, \
                                 F_details[i].seats_available_b, F_details[i].total_seats_b, F_details[i].fare_business);
                                 printf("Do you want to book again? y/n\n");
@@ -579,7 +753,7 @@ int main()
                                 scanf("%s", Bool);
                                 if (strcmp(Bool, "y") == 0)
                                 {
-                                    main();
+                                    USER(fp_orig, fp_mod, ticket);
                                 }
                                 else
                                 {
@@ -600,6 +774,10 @@ int main()
                 }
                 else
                 {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        fputs(fl_line[i].flt_line, fp_mod);
+                    }
                     printf("Hope you enjoyed our booking service!\n");
                     printf("Hoping to meet you again...\n");
                     //continue;
@@ -615,7 +793,134 @@ int main()
             fputs(buffer, fp_mod);
         }
     }
+}
+
+int main()
+{
+    nextMessage();
+    FILE * fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt", "r");
+    FILE * fp_mod = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt", "w");
+    FILE * ticket;
+    FILE* user_admin = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/user_admin_data.txt", "r");
+    /*if (app_mode)
+    {
+        ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "w");
+    }
+    else
+    {
+        ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "a");
+    }*/
+    if (fp_orig == NULL)
+    {
+        printf("\nUnable to open airline_database.txt file.\n");
+        printf("Please check whether file exists and you have write privilege.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (fp_mod == NULL)
+    {
+        /* Unable to open file hence exit */
+        printf("\nUnable to open airline_database_mod.txt file.\n");
+        printf("Please check whether file exists and you have write privilege.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (user_admin == NULL)
+    {
+        /* Unable to open file hence exit */
+        printf("\nUnable to open user_admin_database.txt file.\n");
+        printf("Please check whether file exists and you have write privilege.\n");
+        exit(EXIT_FAILURE);
+    }
+    char buffer[50], user_admin_str[50];
+    char ch;
+    char s[20], m[20], q[20], n[20];
+    printf("Are you an Admin or a Customer?\n");
+    printf("Enter 'A' for ADMIN login o/w 'C' for CUSTOMER LOGIN: ");
+    ch = getc(stdin);
+
+    if (ch == 'A')
+    {
+        printf("ADMIN-NAME: ");
+        scanf("%s", s);
+        printf("PASSWORD: ");
+        scanf("%s", m);
+        int t = 0, count1;
+        while (fgets(buffer, 50, user_admin)!=NULL)
+        {
+            if (strcmp(buffer, "ADMIN\n")==0)
+            {
+                fscanf(user_admin, "%d", &count1);
+                for (int i = 0; i < count1; i++)
+                {
+                    char* userid = malloc(sizeof(char)*20);
+                    char* passwd = malloc(sizeof(char)*20);
+                    fgets(user_admin_str, 50, user_admin);
+                    sscanf(user_admin_str, "%s %s\n", userid, passwd);
+                    if (strcmp(userid, q) == 0 && strcmp(passwd, n) == 0)
+                    {
+                        t = 1;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        if (t)
+        {
+            printf("Edit the Airline Details.\n");
+            ADMIN(fp_orig, fp_mod);
+            fclose(fp_mod);
+        }
+        else
+        {
+            printf("INVALID ADMIN CREDENTIALS\n");
+        }
+    }
+    else if (ch == 'C')
+    {
+        printf("CUSTOMER-NAME: ");
+        scanf("%s", q);
+        printf("PASSWORD: ");
+        scanf("%s", n);
+        int t1 = 0, count;
+        while (fgets(buffer, 50, user_admin)!=NULL)
+        {
+            if (strcmp(buffer, "USER\n")==0)
+            {
+                fscanf(user_admin, "%d", &count);
+                for (int i = 0; i < count; i++)
+                {
+                    char* userid = malloc(sizeof(char)*20);
+                    char* passwd = malloc(sizeof(char)*20);
+                    fgets(user_admin_str, 50, user_admin);
+                    sscanf(user_admin_str, "%s %s\n", userid, passwd);
+                    if (strcmp(userid, q) == 0 && strcmp(passwd, n) == 0)
+                    {
+                        t1 = 1;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        if (t1)
+        {
+            printf("Welcome To the airline booking service\n");
+            USER(fp_orig, fp_mod, ticket);
+            fclose(fp_mod);
+        }
+        else
+        {
+            printf("INVALID USER CREDENTIALS\n");
+        }
+    }
+    else
+    {
+        printf("Please type the correct option\n");
+    }
+    
     fclose(fp_orig);
-    fclose(fp_mod);
-    fclose(ticket);
+    fclose(user_admin);
+    //remove("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt");
+    //rename("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt",\
+     "/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt");
 }
