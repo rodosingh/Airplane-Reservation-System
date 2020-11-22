@@ -182,7 +182,9 @@ int main()
             continue;
         }
     }*/
-    
+   char gohji[] = "gohji\n";
+   strtok(gohji, "\n");
+   printf("Gohji = %s", gohji);  
 
     if (strcmp(nume, airp)==0)
     {

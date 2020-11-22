@@ -1,27 +1,70 @@
-Name : rod
+TICKET
+=============================================================
+Name : Singh
 Age :1
+Flight ID : NK215
 Class : Business
-Fare : 2000.0
+Fare : 3620.0
 Source : NewDelhi                                    
-Destination : Mumbai
-Departure time : 14:00
-Arrival time : 15:00                                    
-Date of Boarding : 23/11/2020
-Mobile No.: 123
+Destination : Kolkata
+Departure time : 21:00
+Arrival time : 05:00                                    
+Date of Boarding : 24/11/2020
+Mobile No.: 123456
 
 
-Name : wer
+
+---------------------------------------------------------
+Name : dehury
+Age :123
+Flight ID : NK215
+Class : Business
+Fare : 9050.0
+Source : NewDelhi                                    
+Destination : Kolkata
+Departure time : 21:00
+Arrival time : 05:00                                    
+Date of Boarding : 24/11/2020
+Mobile No.: 123456
+
+
+
+---------------------------------------------------------
+Name : srini
 Age :14
+Flight ID : NK215
 Class : Business
-Fare : 4000.0
+Fare : 5882.5
 Source : NewDelhi                                    
-Destination : Mumbai
-Departure time : 14:00
-Arrival time : 15:00                                    
-Date of Boarding : 23/11/2020
-Mobile No.: 1
+Destination : Kolkata
+Departure time : 21:00
+Arrival time : 05:00                                    
+Date of Boarding : 24/11/2020
+Mobile No.: 123456
 
 
-Total Fare : 6000.0
+
+---------------------------------------------------------
+Name : Asu
+Age :12
+Flight ID : NK215
+Class : Business
+Fare : 5882.5
+Source : NewDelhi                                        
+Destination : Kolkata
+Departure time : 21:00
+Arrival time : 05:00                                        
+Date of Boarding : 24/11/2020
+Mobile No.: 85476321
 
 
+
+---------------------------------------------------------
+
+
+=============================================================
+
+Total Fare : 24435.0
+
+
+=============================================================
