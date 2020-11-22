@@ -1,61 +1,46 @@
 TICKET
 =============================================================
 Name : Singh
-Age :1
-Flight ID : NK215
+Age :2
+Flight ID : NM113
 Class : Business
-Fare : 3620.0
+Fare : 1600.0
 Source : NewDelhi                                    
-Destination : Kolkata
-Departure time : 21:00
-Arrival time : 05:00                                    
-Date of Boarding : 24/11/2020
-Mobile No.: 123456
+Destination : Mumbai
+Departure time : 17:00
+Arrival time : 18:30                                    
+Date of Boarding : 25/11/2020
+Mobile No.: 8895085945
 
 
 
 ---------------------------------------------------------
-Name : dehury
-Age :123
-Flight ID : NK215
-Class : Business
-Fare : 9050.0
-Source : NewDelhi                                    
-Destination : Kolkata
-Departure time : 21:00
-Arrival time : 05:00                                    
-Date of Boarding : 24/11/2020
-Mobile No.: 123456
-
-
-
----------------------------------------------------------
-Name : srini
+Name : Dehury
 Age :14
-Flight ID : NK215
+Flight ID : NM113
 Class : Business
-Fare : 5882.5
+Fare : 2600.0
 Source : NewDelhi                                    
-Destination : Kolkata
-Departure time : 21:00
-Arrival time : 05:00                                    
-Date of Boarding : 24/11/2020
-Mobile No.: 123456
+Destination : Mumbai
+Departure time : 17:00
+Arrival time : 18:30                                    
+Date of Boarding : 25/11/2020
+Mobile No.: 9777507538
 
 
 
 ---------------------------------------------------------
-Name : Asu
-Age :12
-Flight ID : NK215
+Name : Padhan
+Age :23
+Flight ID : NM113
 Class : Business
-Fare : 5882.5
+Fare : 4000.0
 Source : NewDelhi                                        
-Destination : Kolkata
-Departure time : 21:00
-Arrival time : 05:00                                        
-Date of Boarding : 24/11/2020
-Mobile No.: 85476321
+Destination : Mumbai
+Departure time : 17:00
+Arrival time : 18:30                                        
+Date of Boarding : 25/11/2020
+Mobile No.: 8894563217
 
 
 
@@ -64,7 +49,7 @@ Mobile No.: 85476321
 
 =============================================================
 
-Total Fare : 24435.0
+Total Fare : 8200.0
 
 
 =============================================================

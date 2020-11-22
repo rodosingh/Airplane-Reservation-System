@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #define MAX_YR 9999 // max year that we can quest for, beyond that we will get invalid statement
 #define MIN_YR 2000 // min year cutoff, below this will give a invalid statement
-//structure to store date
 //system(char * "CLS");
 //clear;
+//structure to store date
 typedef struct //function
 {
     int yyyy;
@@ -19,7 +19,7 @@ typedef struct
 {
     char *flt_line;
 } flight_lines;
-
+// structure to save the flight details
 typedef struct FL_details
 {
     char *FLight_id;
@@ -32,7 +32,7 @@ typedef struct FL_details
     int total_seats_b;
     float fare_business;
 } flight_details;
-
+// structure to save the traveller details. 
 typedef struct TRaveller
 {
     char *name;
@@ -49,30 +49,7 @@ typedef struct TRaveller
     long int mobile_no;
 } traveller_details;
 
-/*int code_airport(char* station)
-{
-    if (strcmp(station, "NewDelhi")==0)
-    {
-        return 10;
-    }
-    else if (strcmp(station, "Mumbai")==0)
-    {
-        return 11;
-    }
-    else if (strcmp(station, "Kolkata")==0)
-    {
-        return 12;
-    }
-    else if (strcmp(station, "Chennai")==0)
-    {
-        return 13;
-    }
-    else
-    {
-        return 14;
-    }
-}*/
-
+// check validity of Airport name.
 int airport_valid(char *airplane_name)
 {
     char ports[5][50] = {"NewDelhi", "Mumbai", "Kolkata", "Chennai", "Hyderabad"};
@@ -90,6 +67,7 @@ int airport_valid(char *airplane_name)
     return ctr;
 }
 
+
 int fm(int date, int month, int year)
 {
     int fmonth, leap;
@@ -106,6 +84,7 @@ int fm(int date, int month, int year)
 
     return fmonth;
 }
+//function that converts the date to day.
 char *day_of_week(int date, int month, int year)
 {
 
@@ -164,7 +143,8 @@ char *day_of_week(int date, int month, int year)
    }*/
     return day;
 }
-// price conversion
+// price conversion for economy class
+// 75% discount for infants, 50% for childs, and 0% for adults.
 float convert_e(int *age, float *price)
 {
     float new_price;
@@ -182,6 +162,8 @@ float convert_e(int *age, float *price)
     }
     return new_price;
 }
+// price conversion for economy class
+// 60% discount for infants, 35% for childs, and 0% for adults.
 float convert_b(int *age, float *price)
 {
     float new_price;
@@ -207,7 +189,7 @@ int IsLeapYear(int year)
              (year % 100 != 0)) ||
             (year % 400 == 0));
 }
-// returns 1 if given date is valid.
+// returns true i.e. 1, if given date is valid.
 int isValidDate(Date *validDate)
 {
     time_t timing = time(NULL);
@@ -255,6 +237,7 @@ char *Day(Date *getDate)
     }
 }
 
+//this will be printed at top of the terminal
 void headMessage()
 {
     system("cls");
@@ -268,6 +251,7 @@ void headMessage()
     printf("\n\t\t\t----------------------------------------------------------------------------");
 }
 
+//next the below message will be printed.
 void nextMessage()
 {
     headMessage();
@@ -286,6 +270,8 @@ void nextMessage()
     printf("\n\n\n\t\t\t Press 'Enter key' to continue.....");
     getchar();
 }
+
+//with this function one can change the flight details.
 void ADMIN(FILE *fp_orig, FILE *fp_mod)
 {
     Date getDate = {0}; //variable to store date
@@ -319,9 +305,13 @@ void ADMIN(FILE *fp_orig, FILE *fp_mod)
     printf("Enter the name of Destination place corresponding to which you want to change flight details : ");
     scanf("%s", dest);
     //printf("Board = %s", DAY);
+
+    // here we check if the airport name is valid or not for both source and
+    // destination. If one is wrong then the code will show the below error.
     if (!(airport_valid(board) && airport_valid(dest)))
     {
         printf("Please enter a valid airport name!:|\n");
+        //we have used recursion here to start again from first.
         ADMIN(fp_orig, fp_mod);
     }
     while (fgets(buffer, 100, fp_orig) != NULL)
@@ -371,64 +361,20 @@ void ADMIN(FILE *fp_orig, FILE *fp_mod)
                         scanf("%d", &chng_details);
                         if (chng_details)
                         {
-                            printf("Do you want to change flight ID? 1/0\n");
-                            int flid, c;
-                            scanf("%d", &flid);
-                            while ( (c = getchar()) != '\n' && c != EOF );
-                            if (flid)
-                            {
-                                printf("Enter flight ID : ");
-                                scanf("%s", F_details[0].FLight_id);
-                            }
-                            else
-                            {
-                                F_details[0].FLight_id = fl_id;
-                            }
-                            printf("Do you want to write something else? 0/1/2\n");
-                            printf("Enter '0' to write something else, '1' to change details, '2' to keep as it is.\n");
+                            printf("Do you want to overwrite? 0/1\n");
+                            printf("Enter '1' to write something else or change the particulars o/w '0' to keep as it is.\n");
                             int line_p;
                             scanf("%d", &line_p);
-                            if (line_p == 0)
+                            if (line_p)
                             {
                                 //  this removes '\n' from input stream.
                                 int c;
-                                while ( (c = getchar()) != '\n' && c != EOF );
+                                while ((c = getchar()) != '\n' && c != EOF)
+                                    ;
                                 char add_line[100];
                                 printf("Type below what you want to write...\n");
                                 fgets(add_line, 100, stdin);
                                 fputs(add_line, fp_mod);
-                            }
-                            else if (line_p == 1)
-                            {
-                                int c1;
-                                while ( (c1 = getchar()) != '\n' && c1 != EOF );
-                                printf("\nChange flight departure time : ");
-                                scanf("%s", F_details[0].Timing);
-                                //while ( (c1 = getchar()) != '\n' && c1 != EOF );
-                                printf("\nChange flight Arrival time : ");
-                                scanf("%s", F_details[0].Timing2);
-                                while ( (c1 = getchar()) != '\n' && c1 != EOF );
-                                printf("\nChange Economy Class seats available : ");
-                                scanf("%d", &F_details[0].seats_available_e);
-                                while ( (c1 = getchar()) != '\n' && c1 != EOF );
-                                printf("\nChange Total Economy Class Seats : ");
-                                scanf("%d", &F_details[0].total_seats_e);
-                                while ( (c1 = getchar()) != '\n' && c1 != EOF );
-                                printf("\nChange Economy Class Fare : ");
-                                scanf("%f", &F_details[0].fare_economy);
-                                while ( (c1 = getchar()) != '\n' && c1 != EOF );
-                                printf("\nChange Business Class Seats Available : ");
-                                scanf("%d", &F_details[0].seats_available_b);
-                                while ( (c1 = getchar()) != '\n' && c1 != EOF );
-                                printf("\nChange Total Business Class Seats : ");
-                                scanf("%d", &F_details[0].total_seats_b);
-                                while ( (c1 = getchar()) != '\n' && c1 != EOF );
-                                printf("\nChange Business Class Fare : ");
-                                scanf("%f", &F_details[0].fare_business);
-                                while ( (c1 = getchar()) != '\n' && c1 != EOF );
-                                fprintf(fp_mod, "%s %s %s %d %d %.1f %d %d %.1f\n", F_details[0].FLight_id, F_details[0].Timing,
-                                        F_details[0].Timing2, F_details[0].seats_available_e, F_details[0].total_seats_e, F_details[0].fare_economy,
-                                        F_details[0].seats_available_b, F_details[0].total_seats_b, F_details[0].fare_business);
                             }
                             else
                             {
@@ -448,11 +394,15 @@ void ADMIN(FILE *fp_orig, FILE *fp_mod)
                     {
                         fputs(fl_line[i].flt_line, fp_mod);
                     }
+                    // Below code is an example of recursion, where we intend to change details
+                    // of other flights. But due to some time limitation and some glitches we
+                    // leave this part.
                     /*printf("Do you want to modify details of other flights? 0/1\n");
                     int mod_flights;
                     scanf("%d", &mod_flights);
                     if (mod_flights)
                     {
+                        rewind(fp_orig);
                         ADMIN(fp_orig, fp_mod);
                     }
                     else
@@ -472,6 +422,8 @@ void ADMIN(FILE *fp_orig, FILE *fp_mod)
         }
     }
 }
+// this code helps us in searching for the flights that run from our desired boarding
+// place to destination.
 void SEARCH(FILE *fp_orig)
 {
     printf("\t\t\t\tAvailable airports: NewDelhi, Mumbai, Kolkata, Chennai, Hyderabad\n");
@@ -500,18 +452,21 @@ void SEARCH(FILE *fp_orig)
         sprintf(DAY, "%s", day_of_travel);
     }
     char buffer[100];
+    // we have put a while loop that reads line from original file and checks further.
     while (fgets(buffer, 100, fp_orig) != NULL)
     {
         char board_to_dest[100], board_dest[100];
         sprintf(board_dest, "%s to %s\n", board, dest);
         if (BOOL)
         {
+            // comparing the DAY we entered with the line from file.
             if (strcmp(DAY, buffer) == 0)
             {
                 fgets(board_to_dest, 100, fp_orig);
                 //allocate a matrix shape memory space to flight_line struct
                 if (strcmp(board_to_dest, board_dest) == 0)
                 {
+                    //printing the flight details on screen.
                     flight_lines *fl_line = malloc(sizeof(flight_lines) * 6);
                     printf("\t\t\t\tAvailable flights on %s from %s", DAY, board_to_dest);
                     printf("\n\t\t\t\t======================================================\n");
@@ -552,6 +507,7 @@ void SEARCH(FILE *fp_orig)
         }
     }
 }
+//this function helps in booking seats in our desired flight and print the corresponding ticket for us.
 void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
 {
     Date getDate = {0}; //variable to store date
@@ -563,6 +519,7 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
     char buffer[100];
     char *board = malloc(sizeof(char) * 30);
     char *dest = malloc(sizeof(char) * 30);
+    // enter your source airport.
     printf("Enter your source of Journey : ");
     // always note that string is an array of characters and usually writing that string alone means we are
     // giving the address of first element of that array = &string[0]. and hence we don't specify "&string" in "scanf".
@@ -570,13 +527,16 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
     // and secondly it also contains the whole string.
     scanf("%s", board);
     //getchar();
+    //enter your destination airport.
     printf("Enter your destination of Journey : ");
     scanf("%s", dest);
+    // shows the below statement if anyone of the boarding or destination place is wrong.
     if (!(airport_valid(board) && airport_valid(dest)))
     {
         printf("Please enter a valid airport name!:|\n");
         USER(fp_orig, fp_mod, ticket);
     }
+    //going through whole file and reading one line each time and comparing it with the day entered
     while (fgets(buffer, 100, fp_orig) != NULL)
     {
         if (strcmp(day_of_travel, buffer) == 0)
@@ -606,6 +566,7 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
                 printf("\n\t\t\t\t======================================================\n");
                 printf("\n\t\t\t\tFlit-ID Dept. Arrv. Eco Ect EcoCost Bus But BusCost\n");
                 printf("\t\t\t\t------------------------------------------------------\n");
+                //print the flights available on user inputted date from source to dest.
                 for (int i = 0; i < 6; i++)
                 {
                     char *flight_line = malloc(sizeof(char) * (100));
@@ -656,6 +617,8 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
                         //free(timing2);
                         if (strcmp(Id, F_details[i].FLight_id) == 0)
                         {
+                            //Below once we get into this loop by matching flight id from user and from file.
+                            //we enter details of travellers here through struct.
                             printf("Enter no. of Travellers : ");
                             int pass_no;
                             scanf("%d", &pass_no);
@@ -666,9 +629,10 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
                             //not needed...continue
                             for (int j = 0; j < pass_no; j++)
                             {
+                                // reading strings that will be printed on screen will inform one what we want to take user input.
                                 printf("\nEnter details for traveller no. %d : \n", (j + 1));
                                 printf("\nEnter your last name ONLY : \n");
-                                char* traveller_name = malloc(sizeof(char)*50);
+                                char *traveller_name = malloc(sizeof(char) * 50);
                                 scanf("%s", traveller_name);
                                 Ticket[j].name = traveller_name;
                                 printf("\nEnter your age : \n");
@@ -719,6 +683,7 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
                             int Bool1;
                             scanf("%d", &Bool1);
                             //not needed...continue
+                            // Here we add details for extra passengers and print that on to sreen.
                             if (Bool1)
                             {
                                 printf("Enter no. of Travellers : ");
@@ -727,7 +692,7 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
                                 {
                                     printf("\nEnter details for traveller no. %d : \n", (pass_no + j + 1));
                                     printf("\nEnter your last name ONLY : \n");
-                                    char* traveller_name1 = malloc(sizeof(char)*50);
+                                    char *traveller_name1 = malloc(sizeof(char) * 50);
                                     scanf("%s", traveller_name1);
                                     Ticket1[j].name = traveller_name1;
                                     printf("\nEnter your age : \n");
@@ -774,11 +739,13 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
                                 }
                             }
                             printf("Do you want to checkout? 0/1\n");
+                            //here we checkout
                             printf("Enter 1 to checkout otherwise enter 0\n");
                             int YN;
                             scanf("%d", &YN);
                             if (YN)
                             {
+                                //Here we generate the ticket.txt file
                                 ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "w");
                                 if (ticket == NULL)
                                 {
@@ -872,6 +839,8 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
                                         F_details[i].seats_available_b, F_details[i].total_seats_b, F_details[i].fare_business);
                                 fclose(ticket);
                             }
+                            //if we don't want to checkout then all data will be dumped without any change to the temporary
+                            // file fp_mod.
                             else
                             {
                                 //free(Ticket);
@@ -936,53 +905,36 @@ void USER(FILE *fp_orig, FILE *fp_mod, FILE *ticket)
 int main()
 {
     nextMessage();
-    FILE *fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt", "r");
-    FILE *fp_mod = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt", "w");
+    //initialising FILE pointers to open four files.
+    FILE *fp_orig;
+    FILE *fp_mod;
     FILE *ticket;
-    FILE *user_admin = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/user_admin_data.txt", "r");
-    /*if (app_mode)
-    {
-        ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "w");
-    }
-    else
-    {
-        ticket = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/Ticket.txt", "a");
-    }*/
-    if (fp_orig == NULL)
-    {
-        printf("\nUnable to open airline_database.txt file.\n");
-        printf("Please check whether file exists and you have write privilege.\n");
-        exit(EXIT_FAILURE);
-    }
-    if (fp_mod == NULL)
-    {
-        /* Unable to open file hence exit */
-        printf("\nUnable to open airline_database_mod.txt file.\n");
-        printf("Please check whether file exists and you have write privilege.\n");
-        exit(EXIT_FAILURE);
-    }
-    if (user_admin == NULL)
-    {
-        /* Unable to open file hence exit */
-        printf("\nUnable to open user_admin_database.txt file.\n");
-        printf("Please check whether file exists and you have write privilege.\n");
-        exit(EXIT_FAILURE);
-    }
+    FILE *user_admin;
+    // start with searching facility provided by SEARCH() function.
     printf("Do you want to search for flights? 0/1 \n");
     int search_one;
     scanf("%d", &search_one);
     if (search_one)
     {
+        fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt", "r");
         //search function for searching flights.
         SEARCH(fp_orig);
     }
-
+    // Here we use Ticket Booking facility using USER() function
     char tick_bool[1];
     int admin_bool;
     printf("DO YOU WANT TO BOOK TICKETS? y/n\n");
     scanf("%s", tick_bool);
     if (strcmp(tick_bool, "y") == 0)
     {
+        user_admin = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/user_admin_data.txt", "r");
+        if (user_admin == NULL)
+        {
+            /* Unable to open file hence exit */
+            printf("\nUnable to open user_admin_database.txt file.\n");
+            printf("Please check whether file exists and you have write privilege.\n");
+            exit(EXIT_FAILURE);
+        }
         char buffer[50], user_admin_str[50];
         char q[20], n[20];
         printf("Login as USER\n");
@@ -991,6 +943,8 @@ int main()
         printf("PASSWORD: ");
         scanf("%s", n);
         int t1 = 0, count;
+        //here we are checking the user credentials are correct or not by comparing with our 
+        //user_admin data base file.
         while (fgets(buffer, 50, user_admin) != NULL)
         {
             if (strcmp(buffer, "USER\n") == 0)
@@ -1013,22 +967,53 @@ int main()
         }
         if (t1)
         {
+            //if matches then do the booking.
+            fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt", "r");
+            fp_mod = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt", "w");
+            if (fp_orig == NULL)
+            {
+                printf("\nUnable to open airline_database.txt file.\n");
+                printf("Please check whether file exists and you have write privilege.\n");
+                exit(EXIT_FAILURE);
+            }
+            if (fp_mod == NULL)
+            {
+                /* Unable to open file hence exit */
+                printf("\nUnable to open airline_database_mod.txt file.\n");
+                printf("Please check whether file exists and you have write privilege.\n");
+                exit(EXIT_FAILURE);
+            }
             printf("\n\t\t\t\t########################################################\n");
             printf("\t\t\t\t#################     Hooray!     #######################\n");
             printf("\t\t\t\t##########  WELCOME TO TICKET BOOKING SYSTEM  ###########\n");
             printf("\t\t\t\t#########################################################\n");
             USER(fp_orig, fp_mod, ticket);
             fclose(fp_mod);
+            fclose(fp_orig);
+            remove("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt");
+            rename("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt",
+                   "/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt");
         }
         else
         {
             printf("YOU HAVE INPUTTED INVALID USER CREDENTIALS\n");
         }
+        fclose(user_admin);
     }
+    //here we enjoy the privilege to edit the database using ADMIN()
+    //But before we need to login to get into the system.
     printf("DO YOU WANT TO EDIT FLIGHT DETAILS? 0/1 \n");
     scanf("%d", &admin_bool);
     if (admin_bool)
     {
+        user_admin = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/user_admin_data.txt", "r");
+        if (user_admin == NULL)
+        {
+            /* Unable to open file hence exit */
+            printf("\nUnable to open user_admin_database.txt file.\n");
+            printf("Please check whether file exists and you have write privilege.\n");
+            exit(EXIT_FAILURE);
+        }
         char buffer[50], user_admin_str[50];
         char s[20], m[20];
         printf("Login as ADMIN!\n");
@@ -1037,6 +1022,8 @@ int main()
         printf("PASSWORD: ");
         scanf("%s", m);
         int t = 0, count1;
+        //here we are checking the admin credentials are correct or not by comparing with our 
+        //user_admin data base file.
         while (fgets(buffer, 50, user_admin) != NULL)
         {
             if (strcmp(buffer, "ADMIN\n") == 0)
@@ -1059,22 +1046,23 @@ int main()
         }
         if (t)
         {
+            fp_orig = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt", "r");
+            fp_mod = fopen("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt", "w");
             printf("\n\t\t\t\t########################################################\n");
             printf("\t\t\t\t##################     Hi! Admin    #####################\n");
             printf("\t\t\t\t############  DAARK AIRLINES EDITING SYSTEM  ############\n");
             printf("\t\t\t\t#########################################################\n");
             ADMIN(fp_orig, fp_mod);
             fclose(fp_mod);
+            fclose(fp_orig);
+            remove("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt");
+            rename("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt",
+                   "/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt");
         }
         else
         {
             printf("YOU HAVE INPUTTED INVALID ADMIN CREDENTIALS\n");
         }
+        fclose(user_admin);
     }
-
-    fclose(fp_orig);
-    fclose(user_admin);
-    //remove("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt");
-    //rename("/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database_mod.txt",\
-     "/mnt/03aac6ab-de5b-4f92-8b47-5e62ac811a34/9th SEM/CS3101_C_&_DS/C_and_DS/Airplane-Reservation-System/airline_database.txt");
 }
